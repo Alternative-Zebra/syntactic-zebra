@@ -1,0 +1,14 @@
+#this is a comment
+
+this -> "is how to declare a variable"; #we need to use semicolons!
+
+#use vars to declare functions
+#like this:
+
+function -> @(){
+    heehaw("hey there!") # this is how to print something!
+};
+
+
+
+function();

@@ -135,17 +135,9 @@ function make_func(env, exp) {
 
 /* -----[ entry point for NodeJS ]----- */
 import fs from "fs";
+import { open, make_get } from "./httpServer.js";
 
 var globalEnv = new Environment();
-
-globalEnv.def("time", function (func) {
-  try {
-    console.time("time");
-    return func();
-  } finally {
-    console.timeEnd("time");
-  }
-});
 
 if (typeof process != "undefined")
   (function () {
@@ -165,20 +157,17 @@ if (typeof process != "undefined")
       `);
     });
 
-    globalEnv.def("int", function (val) {
-      return val;
+    globalEnv.def("httpOpen", function (port, expRoute) {
+      new open(port, expRoute);
+    });
+
+    globalEnv.def("httpGet", function (url, body) {
+      make_get(url, body);
     });
 
     var code = "";
 
     process.stdin.setEncoding("utf8");
-
-    // process.stdin.on("readable", function () {
-    //   var chunk = process.stdin.read();
-    //   if (chunk) {
-    //     code += chunk;
-    //   }
-    // });
 
     fs.readFile(process.argv[2], "utf-8", (err, data) => {
       if (err) throw err;
@@ -190,11 +179,4 @@ if (typeof process != "undefined")
       var ast = parse(TokenStream(InputStream(code)));
       evaluate(ast, globalEnv);
     }
-
-    // create a function to get the code from the file
-
-    // let fileContent = fs.readFileSync(process.argv[2], "utf8");
-    // code = fileContent.split("\n");
-
-    // process.stdin.end();
   })();
